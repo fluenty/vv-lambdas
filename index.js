@@ -62,60 +62,60 @@ async function sendBatchNotification(messages) {
     }
 }
 
-exports.handler = async function(event, context) {
-    try {
-        await initEnv();
-        const promises = event.Records.map(async (record) => {
-            const { body } = record;
+exports.handler = async function(event, _context) {
+  try {
+    await initEnv();
+    const promises = event.Records.map(async (record) => {
+      const { body } = record;
 
-            const payload = JSON.parse(body)
-            const {
-              tokens,
-              title,
-              message,
-              screen,
-              identifier,
-            } = payload
+      const payload = JSON.parse(body)
+      const {
+        tokens,
+        title,
+        message,
+        screen,
+        identifier,
+      } = payload
 
-            const messages = tokens.map((token) => {
-              return {
-                token: token,
-                notification: {
-                  body: message,
-                  title: title,
-                },
-                data: {
-                  screen: screen,
-                  identifier: identifier,
-                },
-                android: {
-                  priority: "high",
-                }
-              };
-            });
-
-            return new Promise(async (resolve, reject) => {
-                const resp = await sendBatchNotification(messages)
-                if (resp) {
-                    resolve({
-                        success: true
-                    })
-                } else {
-                    reject({
-                        success: false
-                    })
-                }
-            })
-        });
-
-        await Promise.all(promises).then((response)  => {
-            console.log('Success: ', response)
-        }).catch((error) => {
-            console.log('Error: ', error)
-        });
-    } catch (err) {
+      const messages = tokens.map((token) => {
         return {
-            success: false
-        }
+          token: token,
+          notification: {
+            body: message,
+            title: title,
+          },
+          data: {
+            screen: screen,
+            identifier: identifier,
+          },
+          android: {
+            priority: "high",
+          }
+        };
+      });
+
+      return new Promise(async (resolve, reject) => {
+          const resp = await sendBatchNotification(messages)
+          if (resp) {
+            resolve({
+              success: true
+            })
+          } else {
+            reject({
+              success: false
+            })
+          }
+      })
+    });
+
+    await Promise.all(promises).then((response)  => {
+      console.log('Success: ', response)
+    }).catch((error) => {
+      console.log('Error: ', error)
+    });
+  } catch (err) {
+    return {
+      success: false
     }
+  }
 }
