@@ -2,7 +2,7 @@ const admin = require("firebase-admin")
 const AWS = require('aws-sdk')
 const fs = require('fs')
 const s3 = new AWS.S3({
-  apiVersion: '2006-03-01', 
+  apiVersion: '2006-03-01',
   region: process.env.REGION
 });
 
@@ -18,7 +18,7 @@ function downloadFromS3() {
         console.log('Err: ', err)
         reject(err)
       }
-    
+
       fs.writeFileSync('/tmp/firebase-config.json', data.Body)
       resolve(true)
     })
@@ -31,7 +31,7 @@ async function initEnv() {
 
     if (downloadFCM) {
       const serviceAccount = require("/tmp/firebase-config.json");
-      
+
       // Initialize App
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
@@ -50,7 +50,7 @@ async function sendBatchNotification(messages) {
       if (resp.failureCount > 0) {
         console.log(`Failure to send: ${resp.failureCount} notification`)
       }
-      
+
       if (resp.successCount > 0) {
         return true
       } else {
@@ -67,15 +67,16 @@ exports.handler = async function(event, context) {
         await initEnv();
         const promises = event.Records.map(async (record) => {
             const { body } = record;
-            
+
             const payload = JSON.parse(body)
             const {
               tokens,
               title,
               message,
-              screen
+              screen,
+              identifier,
             } = payload
-            
+
             const messages = tokens.map((token) => {
               return {
                 token: token,
@@ -85,13 +86,14 @@ exports.handler = async function(event, context) {
                 },
                 data: {
                   screen: screen,
+                  identifier: identifier,
                 },
                 android: {
-                  priority: "high"
+                  priority: "high",
                 }
               };
             });
-            
+
             return new Promise(async (resolve, reject) => {
                 const resp = await sendBatchNotification(messages)
                 if (resp) {
