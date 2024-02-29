@@ -1,0 +1,22 @@
+version: 0.2
+
+run-as: root
+
+phases:
+  pre_build:
+    run-as: root
+    commands:
+      - echo "Installing dependencies"
+      - npm install
+  
+  build:
+    run-as: root
+    commands:
+      - echo "Zipping function contents"
+      - zip -r function.zip .
+
+  post_build:
+    run-as: root
+    commands:
+      - echo "Replacing Lambda code"
+      - aws lambda update-function-code --function-name ProcessPushNotifications --zip-file fileb://function.zip

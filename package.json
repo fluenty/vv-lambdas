@@ -1,0 +1,23 @@
+{
+  "name": "lambda-pushes",
+  "version": "1.0.0",
+  "description": "Lamba function for VV pushes",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "2.1568.0",
+    "firebase-admin": "12.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/and-cru/vv-lmb-fcmPushes.git"
+  },
+  "author": "Pedre Viljoen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/and-cru/vv-lmb-fcmPushes/issues"
+  },
+  "homepage": "https://github.com/and-cru/vv-lmb-fcmPushes#readme"
+}
